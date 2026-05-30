@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+
 async function getProperties() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/properties`,
@@ -68,6 +69,8 @@ export default async function PropertiesPage() {
                   <p className="font-semibold">
                     ${property.price}
                   </p>
+
+                    
 
                 </div>
 

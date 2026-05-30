@@ -1,3 +1,5 @@
+import FavoriteButton from '@/components/favorite-button';
+
 interface Props {
   params: Promise<{
     id: string;
@@ -65,6 +67,10 @@ export default async function PropertyDetailsPage({
       <p className="mt-6">
         {property.description}
       </p>
+
+      <FavoriteButton
+        propertyId={property.id}
+      />
 
     </div>
   );

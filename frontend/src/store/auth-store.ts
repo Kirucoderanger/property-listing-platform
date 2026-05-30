@@ -1,23 +1,23 @@
+'use client';
+
 import { create } from 'zustand';
 
 interface AuthState {
   token: string | null;
 
-  setToken:
-    (token: string) => void;
+  setToken: (token: string) => void;
 
-  logout:
-    () => void;
+  logout: () => void;
+
+  isAuthenticated: () => boolean;
 }
 
 export const useAuthStore =
-  create<AuthState>((set) => ({
+  create<AuthState>((set, get) => ({
 
     token:
       typeof window !== 'undefined'
-        ? localStorage.getItem(
-            'accessToken',
-          )
+        ? localStorage.getItem('accessToken')
         : null,
 
     setToken: (token) => {
@@ -38,5 +38,8 @@ export const useAuthStore =
 
       set({ token: null });
     },
+
+    isAuthenticated: () =>
+      !!get().token,
   }));
   

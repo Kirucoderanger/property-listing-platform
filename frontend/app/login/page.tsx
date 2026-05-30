@@ -54,6 +54,13 @@ export default function LoginPage() {
           },
         );
 
+        localStorage.setItem(
+  'accessToken',
+  res.data.access_token,
+);
+
+router.push('/dashboard');
+
       setToken(
         res.data
           .access_token,

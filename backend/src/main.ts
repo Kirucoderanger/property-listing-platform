@@ -46,6 +46,11 @@ async function bootstrap() {
     document,
   );
 
+  app.enableCors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+});
+
   await app.listen(5000);
 
   console.log(

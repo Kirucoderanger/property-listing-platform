@@ -10,7 +10,7 @@ export default function RegisterPage() {
 
   const [form, setForm] =
     useState({
-      name: '',
+      
       email: '',
       password: '',
       role: 'USER',
@@ -60,18 +60,7 @@ export default function RegisterPage() {
         className="space-y-4"
       >
 
-        <input
-          className="border p-2 w-full"
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              name:
-                e.target.value,
-            })
-          }
-        />
+        
 
         <input
           className="border p-2 w-full"

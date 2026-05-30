@@ -77,6 +77,18 @@ export class PropertyController {
     );
   }
 
+  @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Get('my-properties')
+getMyProperties(
+  @CurrentUser() user: any,
+) {
+
+  return this.propertyService.getMyProperties(
+    user.id,
+  );
+}
+
   @Get(':id')
   findOne(
     @Param('id') id: string

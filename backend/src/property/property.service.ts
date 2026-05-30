@@ -28,6 +28,26 @@ export class PropertyService {
     private prisma: PrismaService
   ) {}
 
+  async getMyProperties(
+  userId: string,
+) {
+
+  return this.prisma.property.findMany({
+    where: {
+      ownerId: userId,
+      deletedAt: null,
+    },
+
+    include: {
+      images: true,
+    },
+
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+}
+
   async create(
     dto: CreatePropertyDto,
     userId: string,
@@ -255,3 +275,4 @@ export class PropertyService {
     });
   }
 }
+

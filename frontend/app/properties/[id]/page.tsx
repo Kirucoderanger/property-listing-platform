@@ -71,7 +71,9 @@ export default async function PropertyDetailsPage({
       <FavoriteButton
         propertyId={property.id}
       />
-
+    <a href={`mailto:${property.owner.email}`}>
+  Contact Owner
+</a>
     </div>
   );
 }

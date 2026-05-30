@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import ProtectedRoute from '@/components/protected-route';
 
 export default function OwnerPage() {
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -24,6 +25,14 @@ export default function OwnerPage() {
       return response.data;
     },
   });
+
+  const publishProperty = async (id: string) => {
+    await api.patch(`/properties/${id}/publish`);
+    // Refetch properties after publishing
+    await queryClient.invalidateQueries({ queryKey: ['my-properties'] });
+  };
+
+
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -91,10 +100,11 @@ export default function OwnerPage() {
                     'DRAFT' && (
 
                     <button
-                      className="border px-3 py-1"
-                    >
-                      Publish
-                    </button>
+  onClick={() => publishProperty(property.id)}
+  className="border px-3 py-1"
+>
+  Publish
+</button>
                   )}
 
                 </div>

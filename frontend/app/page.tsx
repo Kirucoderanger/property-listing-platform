@@ -25,6 +25,13 @@ export default function HomePage() {
           Login
         </Link>
 
+        <Link
+          href="/register"
+          className="border px-4 py-2"
+        >
+          Register
+        </Link>
+
       </div>
 
     </div>

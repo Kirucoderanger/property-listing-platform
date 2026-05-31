@@ -1,3 +1,4 @@
+import PropertyCard from '@/components/property/PropertyCard';
 import Link from 'next/link';
 
 
@@ -33,12 +34,16 @@ export default async function PropertiesPage() {
         Available Properties
       </h1>
 
+      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {properties.map(
           (property: any) => (
-
+            
+            
             <Link
+            
               key={property.id}
               href={`/properties/${property.id}`}
             >

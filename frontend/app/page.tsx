@@ -10,6 +10,7 @@ export default function HomePage() {
       </h1>
 
       <div className="mt-6 flex gap-4">
+        <div className="border p-4 rounded">
 
         <Link
           href="/properties"
@@ -17,6 +18,9 @@ export default function HomePage() {
         >
           Browse Properties
         </Link>
+        </div>
+
+        <div className="border p-4 rounded">
 
         <Link
           href="/login"
@@ -24,6 +28,9 @@ export default function HomePage() {
         >
           Login
         </Link>
+        </div>
+
+        <div className="border p-4 rounded">
 
         <Link
           href="/register"
@@ -31,6 +38,7 @@ export default function HomePage() {
         >
           Register
         </Link>
+        </div>
 
       </div>
 

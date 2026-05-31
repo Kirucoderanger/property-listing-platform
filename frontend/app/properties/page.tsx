@@ -1,89 +1,140 @@
-import PropertyCard from '@/components/property/PropertyCard';
-import Link from 'next/link';
+'use client';
 
+import { useEffect, useState } from 'react';
 
-async function getProperties() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/properties`,
-    {
-      cache: 'no-store',
+import { api } from '@/lib/api';
+
+import PropertyGrid from '@/components/property-grid';
+
+export default function PropertiesPage() {
+
+  const [properties, setProperties] =
+    useState([]);
+
+  const [page, setPage] =
+    useState(1);
+
+  const [totalPages, setTotalPages] =
+    useState(1);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+
+    loadProperties();
+
+  }, [page]);
+
+  async function loadProperties() {
+
+    try {
+
+      setLoading(true);
+
+      const res =
+        await api.get(
+          `/properties?page=${page}&limit=9`,
+        );
+
+      setProperties(
+        res.data.data,
+      );
+
+      setTotalPages(
+        res.data.totalPages,
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
     }
-  );
+  }
 
-  if (!res.ok) {
-    throw new Error(
-      'Failed to load properties'
+  if (loading) {
+    return (
+      <div className="p-8">
+        Loading...
+      </div>
     );
   }
 
-  return res.json();
-}
-
-export default async function PropertiesPage() {
-
-  const result =
-    await getProperties();
-
-  const properties =
-    result.data || result;
-
   return (
-    <div className="p-8">
+    <div className="max-w-7xl mx-auto p-6">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Available Properties
+      <h1
+        className="
+          text-3xl
+          font-bold
+          mb-8
+        "
+      >
+        Properties
       </h1>
 
-      
+      <PropertyGrid
+        properties={properties}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div
+        className="
+          flex
+          justify-center
+          gap-4
+          mt-10
+        "
+      >
 
-        {properties.map(
-          (property: any) => (
-            
-            
-            <Link
-            
-              key={property.id}
-              href={`/properties/${property.id}`}
-            >
+        <button
+          disabled={page === 1}
+          onClick={() =>
+            setPage(
+              prev => prev - 1,
+            )
+          }
+          className="
+            px-4
+            py-2
+            bg-gray-200
+            rounded
+            disabled:opacity-50
+          "
+        >
+          Previous
+        </button>
 
-              <div className="border rounded-lg overflow-hidden shadow">
+        <span
+          className="
+            flex
+            items-center
+          "
+        >
+          Page {page} of {totalPages}
+        </span>
 
-                {property.images?.[0] && (
-
-                  <img
-                    src={
-                      property.images[0].url
-                    }
-                    alt={property.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-
-                <div className="p-4">
-
-                  <h2 className="font-bold text-lg">
-                    {property.title}
-                  </h2>
-
-                  <p>
-                    {property.location}
-                  </p>
-
-                  <p className="font-semibold">
-                    ${property.price}
-                  </p>
-
-                    
-
-                </div>
-
-              </div>
-
-            </Link>
-          )
-        )}
+        <button
+          disabled={
+            page === totalPages
+          }
+          onClick={() =>
+            setPage(
+              prev => prev + 1,
+            )
+          }
+          className="
+            px-4
+            py-2
+            bg-gray-200
+            rounded
+            disabled:opacity-50
+          "
+        >
+          Next
+        </button>
 
       </div>
 

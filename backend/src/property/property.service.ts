@@ -29,24 +29,24 @@ export class PropertyService {
   ) {}
 
   async getMyProperties(
-  userId: string,
-) {
+    userId: string,
+  ) {
 
-  return this.prisma.property.findMany({
-    where: {
-      ownerId: userId,
-      deletedAt: null,
-    },
+    return this.prisma.property.findMany({
+      where: {
+        ownerId: userId,
+        deletedAt: null,
+      },
 
-    include: {
-      images: true,
-    },
+      include: {
+        images: true,
+      },
 
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-}
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 
   async create(
     dto: CreatePropertyDto,
@@ -77,7 +77,7 @@ export class PropertyService {
 
   async findAll(
     page = 1,
-    limit = 10,
+    limit = 9,
     location?: string,
     minPrice?: number,
     maxPrice?: number,
@@ -85,42 +85,69 @@ export class PropertyService {
 
     const skip = (page - 1) * limit;
 
-    return this.prisma.property.findMany({
-      where: {
-        deletedAt: null,
-        status: PropertyStatus.PUBLISHED,
+    const where = {
+      deletedAt: null,
+      status: PropertyStatus.PUBLISHED,
 
-        ...(location && {
-          location: {
-            contains: location,
-            mode: 'insensitive',
-          },
-        }),
+      ...(location && {
+        location: {
+          contains: location,
+          mode: 'insensitive' as const,
+        },
+      }),
 
-        ...(minPrice && {
-          price: {
+      ...(minPrice && {
+        price: {
+          gte: minPrice,
+        },
+      }),
+
+      ...(maxPrice && {
+        price: {
+          ...(minPrice && {
             gte: minPrice,
+          }),
+          lte: maxPrice,
+        },
+      }),
+    };
+
+    const [properties, total] =
+      await Promise.all([
+
+        this.prisma.property.findMany({
+          where,
+
+          include: {
+            images: true,
+          },
+
+          skip,
+          take: limit,
+
+          orderBy: {
+            createdAt: 'desc',
           },
         }),
 
-        ...(maxPrice && {
-          price: {
-            lte: maxPrice,
-          },
+        this.prisma.property.count({
+          where,
         }),
-      },
+      ]);
 
-      include: {
-        images: true,
-      },
-
-      skip,
-      take: limit,
-
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    return {
+      data: properties,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(
+        total / limit,
+      ),
+      hasNextPage:
+        page < Math.ceil(total / limit),
+      hasPreviousPage:
+        page > 1,
+    };
   }
 
   async findOne(id: string) {
@@ -153,61 +180,61 @@ export class PropertyService {
   }
 
   async update(
-  id: string,
-  dto: UpdatePropertyDto,
-  user: any,
-) {
-
-  const property =
-    await this.findOne(id);
-
-  if (
-    property.ownerId !== user.id &&
-    user.role !== Role.ADMIN
+    id: string,
+    dto: UpdatePropertyDto,
+    user: any,
   ) {
-    throw new ForbiddenException(
-      'Not allowed'
-    );
+
+    const property =
+      await this.findOne(id);
+
+    if (
+      property.ownerId !== user.id &&
+      user.role !== Role.ADMIN
+    ) {
+      throw new ForbiddenException(
+        'Not allowed'
+      );
+    }
+
+    if (
+      property.status ===
+      PropertyStatus.PUBLISHED
+    ) {
+      throw new ForbiddenException(
+        'Published properties cannot be edited'
+      );
+    }
+
+    const {
+      images,
+      ...propertyData
+    } = dto;
+
+    return this.prisma.property.update({
+      where: { id },
+
+      data: {
+
+        ...propertyData,
+
+        ...(images && {
+          images: {
+
+            deleteMany: {},
+
+            create: images.map(url => ({
+              url,
+            })),
+          },
+        }),
+      },
+
+      include: {
+        images: true,
+      },
+    });
   }
-
-  if (
-    property.status ===
-    PropertyStatus.PUBLISHED
-  ) {
-    throw new ForbiddenException(
-      'Published properties cannot be edited'
-    );
-  }
-
-  const {
-    images,
-    ...propertyData
-  } = dto;
-
-  return this.prisma.property.update({
-    where: { id },
-
-    data: {
-
-      ...propertyData,
-
-      ...(images && {
-        images: {
-
-          deleteMany: {},
-
-          create: images.map(url => ({
-            url,
-          })),
-        },
-      }),
-    },
-
-    include: {
-      images: true,
-    },
-  });
-}
 
   async publish(
     id: string,
@@ -275,4 +302,3 @@ export class PropertyService {
     });
   }
 }
-

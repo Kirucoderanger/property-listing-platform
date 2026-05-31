@@ -58,6 +58,10 @@ export default async function PropertyDetailsPage({
               key={image.id}
               src={image.url}
               alt={property.title}
+              className=' w-full
+    h-[500px]
+    object-cover
+    rounded-lg'
             />
           ),
         )}

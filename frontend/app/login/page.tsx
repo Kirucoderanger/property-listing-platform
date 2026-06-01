@@ -45,30 +45,54 @@ export default function LoginPage() {
 
       setLoading(true);
 
-      const res =
-        await api.post(
-          '/auth/login',
-          {
-            email,
-            password,
-          },
-        );
+      
+      
+        const res =
+  await api.post(
+    '/auth/login',
+    {
+      email,
+      password,
+    },
+  );
 
-        localStorage.setItem(
+const token =
+  res.data.accessToken;
+
+localStorage.setItem(
   'accessToken',
-  res.data.access_token,
+  token,
 );
 
-router.push('/dashboard');
+setToken(token);
 
-      setToken(
-        res.data
-          .access_token,
-      );
+const profile =
+  await api.get(
+    '/auth/profile',
+    {
+      headers: {
+        Authorization:
+          `Bearer ${token}`,
+      },
+    },
+  );
 
-      router.push(
-        '/dashboard',
-      );
+const role =
+  profile.data.role;
+
+switch (role) {
+
+  case 'ADMIN':
+    router.push('/admin');
+    break;
+
+  case 'OWNER':
+    router.push('/owner');
+    break;
+
+  default:
+    router.push('/dashboard');
+}
 
     } catch {
 

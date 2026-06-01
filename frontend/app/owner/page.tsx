@@ -40,7 +40,12 @@ export default function OwnerPage() {
 
   return (
 
-    <ProtectedRoute>
+    <ProtectedRoute
+  allowedRoles={[
+    'OWNER',
+    'ADMIN',
+  ]}
+>
 
       <div className="p-8">
 

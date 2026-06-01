@@ -22,18 +22,19 @@ export default function PropertyCard({
     <Link
       href={`/properties/${property.id}`}
       className="
-        bg-white
+         bg-white
         rounded-lg
-        shadow
+        shadow-sm
         overflow-hidden
-        hover:shadow-lg
-        transition
+        hover:shadow-md
+        transition-all
+        duration-200
       "
     >
       <img
         src={
           property.images?.[0]?.url ||
-          'https://via.placeholder.com/400x300'
+          'https://via.placeholder.com/300x200'
         }
         alt={property.title}
         className="
@@ -43,17 +44,38 @@ export default function PropertyCard({
         "
       />
 
-      <div className="p-4">
-        <h2 className="font-bold text-lg">
+      <div className="p-3">
+        <h2
+          className="
+            font-semibold
+            text-gray-800
+            text-sm
+            truncate
+          "
+        >
           {property.title}
         </h2>
 
-        <p className="text-gray-600">
-          {property.location}
+        <p
+          className="
+            text-gray-500
+            text-xs
+            truncate
+            mt-1
+          "
+        >
+          📍 {property.location}
         </p>
 
-        <p className="font-semibold mt-2">
-          ${property.price}
+        <p
+          className="
+            text-green-600
+            font-bold
+            text-sm
+            mt-2
+          "
+        >
+          ${property.price.toLocaleString()}
         </p>
       </div>
     </Link>

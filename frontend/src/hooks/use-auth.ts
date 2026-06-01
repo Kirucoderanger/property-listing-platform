@@ -5,23 +5,22 @@ import {
   useState,
 } from 'react';
 
-import {
-  useRouter,
-} from 'next/navigation';
-
 import { api }
 from '@/lib/api';
 
-export default function ProtectedRoute({
-  children,
-  allowedRoles,
-}: {
-  children: React.ReactNode;
-  allowedRoles: string[];
-}) {
+interface User {
+  id: string;
+  email: string;
+  role: string;
+}
 
-  const router =
-    useRouter();
+export function useAuth() {
+
+  const [user,
+    setUser] =
+    useState<User | null>(
+      null,
+    );
 
   const [loading,
     setLoading] =
@@ -29,7 +28,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
 
-    const checkUser =
+    const loadUser =
       async () => {
 
         const token =
@@ -39,8 +38,8 @@ export default function ProtectedRoute({
 
         if (!token) {
 
-          router.push(
-            '/login',
+          setLoading(
+            false,
           );
 
           return;
@@ -59,17 +58,9 @@ export default function ProtectedRoute({
               },
             );
 
-          const role =
-            res.data.role;
-
-          if (
-            !allowedRoles.includes(
-              role,
-            )
-          ) {
-
-            router.push('/');
-          }
+          setUser(
+            res.data,
+          );
 
         } catch {
 
@@ -77,8 +68,8 @@ export default function ProtectedRoute({
             'accessToken',
           );
 
-          router.push(
-            '/login',
+          setUser(
+            null,
           );
         }
 
@@ -87,21 +78,34 @@ export default function ProtectedRoute({
         );
       };
 
-    checkUser();
+    loadUser();
 
-  }, [
-    router,
-    allowedRoles,
-  ]);
+  }, []);
 
-  if (loading) {
+  const logout =
+    () => {
 
-    return (
-      <div>
-        Loading...
-      </div>
-    );
-  }
+      localStorage.removeItem(
+        'accessToken',
+      );
 
-  return <>{children}</>;
+      setUser(
+        null,
+      );
+
+      window.location.href =
+        '/login';
+    };
+
+  return {
+
+    user,
+
+    role:
+      user?.role,
+
+    loading,
+
+    logout,
+  };
 }

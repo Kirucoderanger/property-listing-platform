@@ -108,6 +108,10 @@ export default function RegisterPage() {
           <option value="OWNER">
             Property Owner
           </option>
+          <option value="ADMIN">
+            Admin
+          </option>
+
 
         </select>
 

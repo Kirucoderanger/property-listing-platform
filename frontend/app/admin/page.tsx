@@ -27,7 +27,7 @@ export default function AdminPage() {
 
   return (
 
-    <ProtectedRoute>
+    <ProtectedRoute allowedRoles={["ADMIN"]}>
 
       <div className="p-8">
 

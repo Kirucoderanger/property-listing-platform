@@ -12,7 +12,7 @@ export default function DashboardPage() {
   } = useCurrentUser();
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedRoles={['USER', 'OWNER', 'ADMIN']}>
 
       <div className="p-10">
 
